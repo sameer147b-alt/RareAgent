@@ -1,6 +1,7 @@
 import streamlit as st
 import dspy
 import os
+import threading
 from dotenv import load_dotenv
 from orchestrator import run_research
 from visuals.radar_chart import create_radar_chart
@@ -14,6 +15,7 @@ def setup_llm():
     if not api_key:
         raise ValueError("GROQ_API_KEY not found! Please check your .env file.")
     lm = dspy.LM(model='groq/llama-3.3-70b-versatile', api_key=api_key, temperature=0.7)
+    dspy.settings.main_ti = threading.get_ident()
     dspy.settings.configure(lm=lm)
     return True
 
