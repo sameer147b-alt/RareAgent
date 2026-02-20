@@ -1,0 +1,6 @@
+gradio
+langgraph
+dspy-ai
+plotly
+networkx
+requests
