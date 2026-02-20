@@ -1,6 +1,7 @@
-gradio
+streamlit
 langgraph
 dspy-ai
 plotly
 networkx
 requests
+python-dotenv
