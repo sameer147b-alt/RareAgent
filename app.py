@@ -5,18 +5,22 @@ from dotenv import load_dotenv
 from orchestrator import run_research
 from visuals.radar_chart import create_radar_chart
 
-# --- Configure Groq LM (runs once on import) ---
+# --- Configure Groq LM (cached to survive Streamlit reruns) ---
 load_dotenv(override=True)
 
-try:
-    groq_api_key = os.getenv("GROQ_API_KEY", "").strip().strip('"').strip("'")
-    if not groq_api_key:
-        st.error("⚠️ GROQ_API_KEY not found! Please check your .env file.")
-        st.stop()
-    lm = dspy.LM(model='groq/llama-3.3-70b-versatile', api_key=groq_api_key, temperature=0.7)
+@st.cache_resource
+def setup_llm():
+    api_key = os.getenv("GROQ_API_KEY", "").strip().strip('"').strip("'")
+    if not api_key:
+        raise ValueError("GROQ_API_KEY not found! Please check your .env file.")
+    lm = dspy.LM(model='groq/llama-3.3-70b-versatile', api_key=api_key, temperature=0.7)
     dspy.settings.configure(lm=lm)
+    return True
+
+try:
+    setup_llm()
 except Exception as e:
-    st.error(f"Failed to configure Groq LM: {e}")
+    st.error(f"⚠️ Failed to configure Groq LM: {e}")
     st.stop()
 
 # --- Page Config ---
